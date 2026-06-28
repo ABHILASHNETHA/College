@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bright Spatial College Portal</title>
+    <style>
+        /* --- Bright Spatial UI Design & Global Styles --- */
+        :root {
+            --primary-bg: linear-gradient(135deg, #ff9a9e 0%, #fecfef 30%, #a1c4fd 70%, #c2e9fb 100%);
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --text-main: #2d3748;
+            --text-muted: #4a5568;
+            --accent-color: #4f46e5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--primary-bg);
+            background-attachment: fixed;
+            color: var(--text-main);
+            overflow-x: hidden;
+            perspective: 1000px; /* Enables 3D space perspective */
+            scroll-behavior: smooth;
+        }
+
+        /* --- Section 1: Hero Entrance --- */
+        .hero-section {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .college-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.85) contrast(1.05);
+            transform: scale(1.05);
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1;
+        }
+
+        .hero-section:hover .college-img {
+            transform: scale(1);
+        }
+
+        .college-title {
+            position: relative;
+            z-index: 2;
+            font-size: clamp(2rem, 6vw, 4.5rem); 
+            font-weight: 800;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+            padding: 2.5rem;
+            color: #1a202c;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            max-width: 85%;
+            transform: translateZ(50px);
+        }
+
+        /* --- New Layout Container: Content Wrapper --- */
+        .content-section {
+            min-height: 100vh;
+            padding: 8vh 5vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Tutorial Button Area (Placed above departments) */
+        .tutorial-trigger-zone {
+            margin-bottom: 6vh;
+            text-align: center;
+        }
+
+        .spatial-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            padding: 1.2rem 3rem;
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 15px 35px rgba(29, 78, 216, 0.3);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            letter-spacing: 0.05rem;
+        }
+
+        .spatial-btn:hover {
+            transform: scale(1.05) translateZ(15px);
+            box-shadow: 0 20px 45px rgba(29, 78, 216, 0.5);
+        }
+
+        /* Departments Sizing */
+        .section-title {
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            margin-bottom: 4vh;
+            text-align: center;
+            color: #1a202c;
+            font-weight: 700;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .course-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            transform: translateY(-10px) translateZ(20px) scale(1.03);
+            background: rgba(255, 255, 255, 0.65);
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #1a202c;
+        }
+
+        .course-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* --- Spatial Overlay & Modal Windows --- */
+        .spatial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            z-index: 10;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .spatial-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .window-container {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 32px;
+            width: 90%;
+            max-width: 800px;
+            padding: 3rem 2.5rem;
+            position: relative;
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.15);
+            transform: scale(0.8) translateZ(-100px);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            text-align: center;
+        }
+
+        .spatial-overlay.active .window-container {
+            transform: scale(1) translateZ(0);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            color: #1a202c;
+            font-size: 1.6rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: rgba(239, 68, 68, 0.8);
+            border-color: rgba(239, 68, 68, 0.8);
+            color: white;
+        }
+
+        /* Video Frame Layer */
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .video-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #000;
+        }
+
+        /* Thank You Window Screen */
+        .thank-you-content {
+            display: none;
+            padding: 1.5rem 0;
+        }
+
+        .thank-you-content h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 1rem;
+            color: #1d4ed8;
+            font-weight: 800;
+        }
+
+        .thank-you-content p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .credits {
+            margin-top: 2.5rem;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .credit-card {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--glass-border);
+            padding: 1.2rem 2rem;
+            border-radius: 16px;
+            min-width: 220px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.02);
+        }
+
+        .credit-card span {
+            display: block;
+            font-size: 0.85rem;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 0.35rem;
+            font-weight: 600;
+            letter-spacing: 0.05rem;
+        }
+
+        .credit-card p {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero-section" id="home">
+        <img src="https://content.jdmagicbox.com/v2/comp/hyderabad/u3/040pxx40.xx40.180626150008.w5u3/catalogue/gauthami-college-bala-nagar-hyderabad-colleges-ae5oa9glqs.jpg" alt="College Campus Entrance" class="college-img">
+        <h1 class="college-title">GOWTHAMI DEGREE COLLEGE</h1>
+    </section>
+
+    <section class="content-section">
+        
+        <div class="tutorial-trigger-zone">
+            <button class="spatial-btn" id="openTutorialBtn">Launch College Tutorial</button>
+        </div>
+
+        <h2 class="section-title">Explore Our Departments</h2>
+        <div class="courses-grid">
+            <div class="course-card">
+                <h3>Computer Science</h3>
+                <p>Dive deep into Next-Gen Spatial Systems, Artificial Intelligence, and Computer Graphics Engineering.</p>
+            </div>
+            <div class="course-card">
+                <h3>Architecture & Spatial Design</h3>
+                <p>Master physical and immersive virtual environments using environment ergonomics and UI principles.</p>
+            </div>
+            <div class="course-card">
+                <h3>Data Intelligence</h3>
+                <p>Extract paradigms from structural complexities and leverage neural networks for global analytics.</p>
+            </div>
+        </div>
+
+    </section>
+
+    <div class="spatial-overlay" id="spatialModal">
+        <div class="window-container">
+            <button class="close-btn" id="closeModalBtn">&times;</button>
+            
+            <div class="video-wrapper" id="videoLayer">
+                <video id="tutorialVideo" controls>
+                    <source src="video.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <div class="thank-you-content" id="thankYouLayer">
+                <h2>Thank You for Watching!</h2>
+                <p>The interactive session has completed successfully.</p>
+                <div class="credits">
+                    <div class="credit-card">
+                        <span>Student Name</span>
+                        <p>SHIVA MANIKANTA CHARY</p>
+                    </div>
+                    <div class="credit-card">
+                        <span>Professor Name</span>
+                        <p>Dr. Eleanor Vance</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const openBtn = document.getElementById('openTutorialBtn');
+        const closeBtn = document.getElementById('closeModalBtn');
+        const modal = document.getElementById('spatialModal');
+        const video = document.getElementById('tutorialVideo');
+        const videoLayer = document.getElementById('videoLayer');
+        const thankYouLayer = document.getElementById('thankYouLayer');
+
+        // Handles window creation and video execution
+        openBtn.addEventListener('click', () => {
+            modal.classList.add('active');
+            videoLayer.style.display = 'block';
+            thankYouLayer.style.display = 'none';
+            video.currentTime = 0;
+            video.play().catch(error => console.log("Interface state safe."));
+        });
+
+        // Monitors system progress -> displays the final Thank You state window
+        video.addEventListener('ended', () => {
+            videoLayer.style.display = 'none';
+            thankYouLayer.style.display = 'block';
+        });
+
+        // Exits window state and vectors user smoothly back to the Home page anchor
+        closeBtn.addEventListener('click', () => {
+            video.pause();
+            modal.classList.remove('active');
+            document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Dismiss mechanism for exterior backdrop clicks
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
